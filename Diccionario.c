@@ -1062,11 +1062,11 @@ void adquirirTerminacionP2(char palabra[]) {
 }
 
 
-void mostrarRecorrido(char* arbolInorden[]){
+void mostrarRecorrido(char* arregloPalabrasInorden[]){
    int i;
-   printf("El arbol en inorden dentro del arreglo es: \n");
+   printf("El arreglo contiene: \n");
    for (i = 0; i < largoArbol; i++){
-      printf("[ %s ]", arbolInorden[i]);
+      printf("[ %s ]", arregloPalabrasInorden[i]);
    }
    printf("\n");
    return;
@@ -1102,17 +1102,31 @@ char obtenerLetraInicial(char palabra[]){
    return palabra[0];
 }
 
-char letrasIniciales(char listaLetrasIniciales[], char listaArbolInorden[]){
-
+void adquirirLetrasIniciales(char listaLetrasIniciales[], char* listaArbolInorden[]){
+   int i;
+   for (i = 0; i < largoArbol; i++){
+      listaLetrasIniciales[i] = obtenerLetraInicial(listaArbolInorden[i]);
+   }
+   return;
 }
 
 void inicializar(){
    char* listaArbolInordenEspanhol[largoArbol];
    char* listaArbolInordenOtro[largoArbol];
+   char listaLetrasInicialesEspanhol[largoArbol];
+   char listaLetrasInicialesOtro[largoArbol];
+   int i;
    contadorEspanhol = 0;
    contadorOtro = 0;
    generarListaArbolInordenEspanhol(&raizEspanhol, listaArbolInordenEspanhol);
    generarListaArbolInordenOtro(&raizOtro, listaArbolInordenOtro);
+   mostrarRecorrido(listaArbolInordenEspanhol);
+   adquirirLetrasIniciales(listaLetrasInicialesEspanhol, listaArbolInordenEspanhol);
+   printf("El arreglo contiene: \n");
+   for (i = 0; i < largoArbol; i++){
+      printf("[ %c ]", listaLetrasInicialesEspanhol[i]);
+   }
+   printf("\n");
 }
 
 int main(int argc, char const *argv[]){
