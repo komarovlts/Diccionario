@@ -2,7 +2,7 @@
 /*Diccionario - Laboratorio 5.
 Estudiantes de diversos idiomas se encuentran haciendo una investigación, el la cual se requiere obtener
 las palabras de un idioma en un formato de fácil visualización la ellos. Es por esto que le han solicitado a
-usted que implemente esto mediante un programa. El formato requerido es  una matriz en la cual cada
+usted que implemente esto mediante un programa. El formato requerido es una matriz en la cual cada
 fila  representa una letra del alfabeto en las que se encontraran las palabras del diccionario en orden alfabetico.
 Esto ayudará a los estudiantes a encontrar patrones dentro de grupos de palabras, por lo que se le solicita que
 apartir de la matriz identifique lo siguiente:
@@ -91,11 +91,36 @@ typedef struct AdelsonVelskiiLandis{
    struct AdelsonVelskiiLandis* hijoIzquierdoPalabraOtro;
 }AVL;
 
+typedef struct verticeAdyacente{
+   char palabra[51];
+   struct verticeAdyacente *siguiente;
+}VA;
+
+typedef struct Vertice{
+   int longitud;
+   char letraInicial;
+   VA *inicio;
+   struct Vertice *siguiente;
+}Vertice;
+
+typedef struct listaAdyacencia{
+   Vertice *inicio;
+}LA;
+
 //Declaración de variables globables.
 AVL* raizEspanhol;
 AVL* raizOtro;
-int largoArbol;
+LA listaAdyacencia;
 char nombreUsuario[200];
+char raizP1[5];
+char raizP2[5];
+char terminacionP1[4];
+char terminacionP2[4];
+int contadorEspanhol;
+int contadorOtro;
+int longitudLA;
+int largoArbol;
+int cantidadLetras;
 
 
 void inicializarArbol(){
@@ -873,16 +898,15 @@ void actualizarDatos(){
                   -Actualizar datos, actualiza los datos del árbol a partir de la entrada "Diccionario.in".
                   -Salir, termina la ejecución del programa.
 */
-void menuPrincipal(){
+void menuTraductor(){
    int opcion;
    do{
       printf("\n***********************************************");
-      printf("\n            Bienvenido %s       ", nombreUsuario);
       printf("\n      1.  Buscar palabras                      ");
       printf("\n      2.  Generar archivo de texto             ");
       printf("\n      3.  Actualizar datos                     ");
       printf("\n      4.  Salir                                ");
-      printf("\n*********************************************");
+      printf("\n***********************************************");
       printf("\n\nElija opcion: ");
       scanf("%d", &opcion);
       fflush(stdin);
@@ -905,6 +929,137 @@ void menuPrincipal(){
    }while(opcion != 4);
 }
 
+char obtenerLetraInicial(char palabra[]){
+   return palabra[0];
+}
+
+void imprimirMatrizEspanhol(char* listaArbolInordenEspanhol[]){
+   FILE* archivoMatrizEspanhol;
+	int i, comparacion;
+   char palabraAuxiliar[51] = "";
+   archivoMatrizEspanhol = fopen("MatrizEspañol.out","w");
+	i = 0;
+	comparacion = 0;
+	while(i < largoArbol){
+		if(comparacion == 0){
+			strcpy(palabraAuxiliar, listaArbolInordenEspanhol[i]);
+			comparacion++;
+			i++;
+      }
+      else{
+			if(obtenerLetraInicial(listaArbolInordenEspanhol[i]) == obtenerLetraInicial(palabraAuxiliar)){
+				fprintf(archivoMatrizEspanhol, "[ %s ]", palabraAuxiliar);
+				strcpy(palabraAuxiliar, listaArbolInordenEspanhol[i]);
+				i++;
+			}
+         else{
+				fprintf(archivoMatrizEspanhol, "[ %s ]", palabraAuxiliar);
+				strcpy(palabraAuxiliar, listaArbolInordenEspanhol[i]);
+				fprintf(archivoMatrizEspanhol, "\n");
+				i++;
+			}
+		}
+	}
+   i--;
+   if(obtenerLetraInicial(listaArbolInordenEspanhol[i]) == obtenerLetraInicial(palabraAuxiliar)){
+      fprintf(archivoMatrizEspanhol, "[ %s ]", palabraAuxiliar);
+      strcpy(palabraAuxiliar, listaArbolInordenEspanhol[i]);
+   }
+   else{
+      fprintf(archivoMatrizEspanhol, "[ %s ]", palabraAuxiliar);
+      strcpy(palabraAuxiliar, listaArbolInordenEspanhol[i]);
+      fprintf(archivoMatrizEspanhol, "\n");
+   }
+   fclose(archivoMatrizEspanhol);
+	return;
+}
+
+void imprimirMatrizOtro(char* listaArbolInordenOtro[]){
+   FILE* archivoMatrizOtro;
+	int i, comparacion;
+   char palabraAuxiliar[51] = "";
+   archivoMatrizOtro = fopen("MatrizOtro.out","w");
+	i = 0;
+	comparacion = 0;
+	while(i < largoArbol){
+		if(comparacion == 0){
+			strcpy(palabraAuxiliar, listaArbolInordenOtro[i]);
+			comparacion++;
+			i++;
+      }
+      else{
+			if(obtenerLetraInicial(listaArbolInordenOtro[i]) == obtenerLetraInicial(palabraAuxiliar)){
+				fprintf(archivoMatrizOtro, "[ %s ]", palabraAuxiliar);
+				strcpy(palabraAuxiliar, listaArbolInordenOtro[i]);
+				i++;
+			}
+         else{
+				fprintf(archivoMatrizOtro, "[ %s ]", palabraAuxiliar);
+				strcpy(palabraAuxiliar, listaArbolInordenOtro[i]);
+				fprintf(archivoMatrizOtro, "\n");
+				i++;
+			}
+		}
+	}
+   i--;
+   if(obtenerLetraInicial(listaArbolInordenOtro[i]) == obtenerLetraInicial(palabraAuxiliar)){
+      fprintf(archivoMatrizOtro, "[ %s ]", palabraAuxiliar);
+      strcpy(palabraAuxiliar, listaArbolInordenOtro[i]);
+   }
+   else{
+      fprintf(archivoMatrizOtro, "[ %s ]", palabraAuxiliar);
+      strcpy(palabraAuxiliar, listaArbolInordenOtro[i]);
+      fprintf(archivoMatrizOtro, "\n");
+   }
+   fclose(archivoMatrizOtro);
+	return;
+}
+
+/* Entrada: No posee entradas.
+   Salida:  Al ser una función void, no posee retorno.
+   Resumen: Se extiende un menú con opciones para el usuario, entre ellas:
+                  -Buscar palabras, ya sean en Español u Otro (contiene un menú propio).
+                  -Generar un archivo de texto (contiene un menú propio).
+                  -Actualizar datos, actualiza los datos del árbol a partir de la entrada "Diccionario.in".
+                  -Salir, termina la ejecución del programa.
+*/
+void menuDiccionario(char* listaArbolInordenEspanhol[], char* listaArbolInordenOtro[]){
+   int opcion;
+   do{
+      printf("\n***********************************************");
+      printf("\n      1.  Buscar Patrones                      ");
+      printf("\n      2.  Matriz en Español                    ");
+      printf("\n      3.  Matriz en Otro idioma                ");
+      printf("\n      4.  Actualizar datos                     ");
+      printf("\n      5.  Salir                                ");
+      printf("\n***********************************************");
+      printf("\n\nElija opcion: ");
+      scanf("%d", &opcion);
+      fflush(stdin);
+      while (getchar() != '\n');
+      switch (opcion){
+         case 1:
+               printf("Aun en desarrollo\n");
+         break;
+         case 2:
+               imprimirMatrizEspanhol(listaArbolInordenEspanhol);
+               printf("\nLa matriz en español ha sido generada exitosamente.\n");
+         break;
+         case 3:
+               imprimirMatrizOtro(listaArbolInordenOtro);
+               printf("\nLa matriz en otro idioma ha sido generada exitosamente.\n");
+         break;
+         case 4:
+               actualizarDatos();
+         break;
+         case 5:
+               anularArbol(&raizEspanhol, &raizOtro);
+               printf("\nHasta Pronto\n");
+         break;
+      }
+   }while(opcion != 5);
+}
+
 /* Entrada: No posee entradas.
    Salida:  Al ser una función void, no posee retorno.
    Resumen: Se guarda en una variable global el nombre del usuario, el cual es requerido a este por pantalla.
@@ -921,14 +1076,43 @@ void ingresar(){
                   -Ingresar, se requiere el nombre del usuario.
                   -Salir, que termina con la ejecución del programa
 */
-void menuPrimario(){
+void menuPrincipal(char* listaArbolInordenEspanhol[], char* listaArbolInordenOtro[]){
    int opcion;
    do{
-     printf("\n*******************************************");
-     printf("\n         Bienvenido al Traductor           ");
-     printf("\n           1.  Ingresar                ");
-     printf("\n           2.  Salir                   ");
-     printf("\n*******************************************");
+     printf("\n***********************************************");
+     printf("\n            Bienvenido %s       ", nombreUsuario);
+     printf("\n           1.  Traductor                       ");
+     printf("\n           2.  Diccionario                     ");
+     printf("\n           3.  Salir                           ");
+     printf("\n***********************************************");
+     printf("\n\nElija opcion: ");
+     scanf("%d",&opcion);
+     fflush(stdin);
+     while (getchar() != '\n');
+     switch (opcion){
+        case 1:
+        menuTraductor();
+        break;
+        case 2:
+        menuDiccionario(listaArbolInordenEspanhol, listaArbolInordenOtro);
+        break;
+        case 3:
+               anularArbol(&raizEspanhol, &raizOtro);
+               printf("SALIR\n");
+        break;
+     }
+  }while (opcion != 1 && opcion != 2 && opcion != 3);
+  return;
+}
+
+void menuPrimario(char* listaArbolInordenEspanhol[], char* listaArbolInordenOtro[]){
+   int opcion;
+   do{
+     printf("\n***********************************************");
+     printf("\n                Bienvenido                     ");
+     printf("\n             1.  Ingresar                      ");
+     printf("\n             2.  Salir                         ");
+     printf("\n***********************************************");
      printf("\n\nElija opcion: ");
      scanf("%d",&opcion);
      fflush(stdin);
@@ -936,7 +1120,7 @@ void menuPrimario(){
      switch (opcion){
         case 1: printf("\n    Ingresar");
         ingresar();
-        menuPrincipal();
+        menuPrincipal(listaArbolInordenEspanhol, listaArbolInordenOtro);
         break;
         case 2:
                anularArbol(&raizEspanhol, &raizOtro);
@@ -944,36 +1128,13 @@ void menuPrimario(){
         break;
      }
   }while (opcion != 1 && opcion != 2);
-  return;
+return;
 }
 // Fin de código de Laboratorio 4 - Traductor.
 // Inicio de código de Laboratorio 5 - Diccionario.
 
 //Declaración de variables globales.
-char raizP1[5];
-char raizP2[5];
-char terminacionP1[4];
-char terminacionP2[4];
-int contadorEspanhol;
-int contadorOtro;
 
-int largoPalabra(char palabra[]){ // Mismo resultado al utilizar strlen.
-   int i, largoPalabra;
-   while(palabra[i] != '\0'){
-      largoPalabra++;
-      i++;
-   }
-   return largoPalabra;
-}
-
-void borrarPalabra(char palabra[]){
-   int i;
-   while(palabra[i] != '\0') {
-      palabra[i] = 0;
-      i++;
-   }
-   return;
-}
 
 void adquirirRaizP1(char palabra[]){
    int i, largoPalabra;
@@ -1098,9 +1259,6 @@ void generarListaArbolInordenOtro(AVL** raizOtro, char* arbolInordenOtro[]){
    }
 }
 
-char obtenerLetraInicial(char palabra[]){
-   return palabra[0];
-}
 
 void adquirirLetrasIniciales(char listaLetrasIniciales[], char* listaArbolInorden[]){
    int i;
@@ -1113,38 +1271,166 @@ void adquirirLetrasIniciales(char listaLetrasIniciales[], char* listaArbolInorde
 void inicializar(){
    char* listaArbolInordenEspanhol[largoArbol];
    char* listaArbolInordenOtro[largoArbol];
-   char listaLetrasInicialesEspanhol[largoArbol];
-   char listaLetrasInicialesOtro[largoArbol];
    int i;
    contadorEspanhol = 0;
    contadorOtro = 0;
    generarListaArbolInordenEspanhol(&raizEspanhol, listaArbolInordenEspanhol);
    generarListaArbolInordenOtro(&raizOtro, listaArbolInordenOtro);
-   mostrarRecorrido(listaArbolInordenEspanhol);
-   adquirirLetrasIniciales(listaLetrasInicialesEspanhol, listaArbolInordenEspanhol);
-   printf("El arreglo contiene: \n");
-   for (i = 0; i < largoArbol; i++){
-      printf("[ %c ]", listaLetrasInicialesEspanhol[i]);
+   menuPrimario(listaArbolInordenEspanhol, listaArbolInordenOtro);
+
+}
+
+void inicializarListaAdyacencia(){
+   listaAdyacencia.inicio = NULL;
+   longitudLA = 0;
+   return;
+}
+
+Vertice* crearVertice(char letraInicial){
+   Vertice* vertice = (Vertice*)malloc(sizeof(Vertice));
+   vertice->letraInicial = letraInicial;
+   vertice->inicio = NULL;
+   vertice->siguiente = NULL;
+   return vertice;
+}
+
+VA* crearVerticeAdyacente(char palabra[]){
+   VA* verticeAdyacente = (VA*)malloc(sizeof(VA));
+   strcpy(verticeAdyacente->palabra, palabra);
+   verticeAdyacente->siguiente = NULL;
+   return verticeAdyacente;
+}
+
+void agregarVertice(Vertice* vertice){
+   int i;
+	if(listaAdyacencia.inicio == NULL){
+		listaAdyacencia.inicio = vertice;
+      longitudLA = 1;
+		return;
+	}
+	else{
+		Vertice * verticeAux = listaAdyacencia.inicio;
+		for (i = 0; i < longitudLA-1; i++){
+			verticeAux = verticeAux->siguiente;
+		}
+		verticeAux->siguiente = vertice;
+      longitudLA++;
+		return;
+		}
+}
+
+void agregarVerticeAdyacente(Vertice* verticeObjetivo, VA* verticeAdyacente){
+   int i;
+   Vertice* verticeAux = verticeObjetivo;
+	if(verticeAux->inicio == NULL){
+		verticeAux->inicio = verticeAdyacente;
+      verticeAux->longitud = 1;
+		return;
+	}
+	else{
+		VA* verticeAdyacenteAux = verticeAux->inicio;
+		for (i = 0; i < verticeAux->longitud-1; i++){
+			verticeAdyacenteAux = verticeAdyacenteAux -> siguiente;
+		}
+		verticeAdyacenteAux -> siguiente = verticeAdyacente;
+      verticeAux->longitud++;
+		return;
+	}
+}
+
+void crearListaAdyacencia(char listaLetrasInicialesEspanhol[]){
+   int i, k, j, encontrado;
+   char letrasRepetidas[largoArbol];
+   char letraIncertar;
+   k = 0;
+   for(i = 0; i < largoArbol; i++){
+      encontrado = 0;
+      letraIncertar = listaLetrasInicialesEspanhol[i];
+      for (j = 0; j < largoArbol; j++){
+         if(letraIncertar == letrasRepetidas[j]){
+            encontrado = 1;
+         }
+      }
+      if(encontrado == 0){
+         letrasRepetidas[k] = letraIncertar;
+         Vertice* vertice = crearVertice(letraIncertar);
+         agregarVertice(vertice);
+         k++;
+      }
    }
-   printf("\n");
+}
+
+void rellenarListaAdyacencia(char* listaArbolInordenEspanhol[]){
+   int i,j;
+   char letraObjetivo;
+   for (i = 0; i < largoArbol; i++){
+      letraObjetivo = obtenerLetraInicial(listaArbolInordenEspanhol[i]);
+      Vertice* verticeAux = listaAdyacencia.inicio;
+      while(verticeAux->letraInicial != letraObjetivo){
+         verticeAux = verticeAux -> siguiente;
+      }
+      VA* verticeAdyacente = crearVerticeAdyacente(listaArbolInordenEspanhol[i]);
+      agregarVerticeAdyacente(verticeAux,verticeAdyacente);
+   }
+   return;
+}
+
+void mostrarVerticeAdyacente(VA* verticeAdyacente) {
+   printf("[ %s ]", verticeAdyacente->palabra);
+   return;
+}
+
+void mostrarVertice(Vertice* vertice){
+	printf(" %c -> ", vertice->letraInicial);
+   VA* verticeAdyacenteAux = vertice->inicio;
+	while(verticeAdyacenteAux-> siguiente != NULL){
+		mostrarVerticeAdyacente(verticeAdyacenteAux);
+		verticeAdyacenteAux = verticeAdyacenteAux -> siguiente;
+	}
+	mostrarVerticeAdyacente(verticeAdyacenteAux);
+	printf("\n");
+   return;
+}
+
+void mostrarListaAdyacencia(){ // Sólo para uso del Desarrollador.
+   Vertice* verticeAux = listaAdyacencia.inicio;
+	while(verticeAux->siguiente != NULL){
+		mostrarVertice(verticeAux);
+		verticeAux = verticeAux -> siguiente;
+	}
+	mostrarVertice(verticeAux);
+	printf("\n");
 }
 
 int main(int argc, char const *argv[]){
    //Laboratorio 4 - Traductor.
-   /*inicializarArbol();
-   leerArchivo();
-   menuPrimario();*/
-   //Laboratorio 4 - Traductor.
-
    inicializarArbol();
    leerArchivo();
+   //Laboratorio 4 - Traductor.
 
-   char P1[50] = "Galaxia";
+   //inicializar();
+   int i = 0;
+   char* listaArbolInordenEspanhol[largoArbol];
+   char* listaArbolInordenOtro[largoArbol];
+   contadorEspanhol = 0;
+   contadorOtro = 0;
+   generarListaArbolInordenEspanhol(&raizEspanhol, listaArbolInordenEspanhol);
+   generarListaArbolInordenOtro(&raizOtro, listaArbolInordenOtro);// Momentaneo
+   char listaLetrasInicialesEspanhol[largoArbol];
+   char listaLetrasInicialesOtro[largoArbol];
+   adquirirLetrasIniciales(listaLetrasInicialesEspanhol, listaArbolInordenEspanhol);
+   inicializarListaAdyacencia();
+   crearListaAdyacencia(listaLetrasInicialesEspanhol);
+   rellenarListaAdyacencia(listaArbolInordenEspanhol);
+   printf("\nLa lista de adyacencia es:\n");
+   mostrarListaAdyacencia();
+   /*while(i != largoArbol){
+      listaLetrasInicialesEspanhol[i];
+   }*/
+
+   /*char P1[50] = "Galaxia";
    char P2[50] = "Galaxy";
    int largoP1, largoP2;
-   //Generar árbol y lista de árbol en inorden.
-   inicializar();
-   //Fin de generación de árbol y lista de árbol en inorden.
    largoP1 = strlen(P1);
    largoP2 = strlen(P2);
    printf("El largo de %s es: %d\n", P1, largoP1);
@@ -1168,6 +1454,6 @@ int main(int argc, char const *argv[]){
    }
    else{
       printf("Las palabras no poseen la misma terminacion\n");
-   }
+   }*/
    return 0;
 }
